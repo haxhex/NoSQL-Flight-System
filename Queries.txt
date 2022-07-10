@@ -1,0 +1,122 @@
+1.
+db.Flights.find({"departreTime" : "2022-02-03"})
+
+2.
+db.Flights.find({ "display_total_fare_per_ticket" : { $gt :  30, $lt : 400}});
+
+3.
+db.Flights.aggregate([
+    {$match:
+            {"departureCity": "Istanbul",
+                "arrivalCity": "Moscow"} },
+    { "$group": {
+            "_id": null,
+            "max": { "$max": "$display_total_fare_per_ticket" },
+            "min": { "$min": "$display_total_fare_per_ticket" }
+        }}
+])
+
+4.
+db.Flights.aggregate([
+    {$match:
+            {"departureCity": "Istanbul",
+                "arrivalCity": "Moscow"} },
+    { "$group": {
+            "_id": null,
+            "Avg": { "$avg": "$display_total_fare_per_ticket" },
+            "Sum": { "$sum": "$display_total_fare_per_ticket" }
+        }}
+])
+
+5.
+--------
+db.Flights.find({$and : [{"departreTime" : "2022-06-21"}, {"cabin_name" : "First Class"}]})
+-----------
+db.Flights.find({$and : [{ "display_total_fare_per_ticket" : { $gt :  30, $lt : 400}} , {"cabin_name" : "Economy Class"}]})
+------------
+db.Flights.aggregate([
+    {$match:
+            {"departureCity": "Istanbul",
+                "arrivalCity": "Moscow",
+                "cabin_name": "Economy Class"} },
+    { "$group": {
+            "_id": null,
+            "max": { "$max": "$display_total_fare_per_ticket" },
+            "min": { "$min": "$display_total_fare_per_ticket" }
+        }}
+])
+---------------
+db.Flights.aggregate([
+    {$match:
+            {"departureCity": "Istanbul",
+             "arrivalCity": "Moscow",
+             "cabin_name": "Economy Class"}},
+    { "$group": {
+            "_id": null,
+            "Avg": { "$avg": "$display_total_fare_per_ticket" },
+            "Sum": { "$sum": "$display_total_fare_per_ticket" }
+        }}
+])
+
+6.
+-- Min
+db.Flights.find({$and:[
+        {"departureCity": "Istanbul",
+            "arrivalCity": "Moscow",
+            "display_total_fare_per_ticket" : { $gt :  30, $lt : 400}}
+]}).sort({display_total_fare_per_ticket:1}).limit(1)
+-- All
+db.Flights.find({$and:[
+        {"departureCity": "Istanbul",
+            "arrivalCity": "Moscow",
+            "display_total_fare_per_ticket" : { $gt :  30, $lt : 400}}
+]})
+
+7.
+db.Flights.find({$and:[
+        {"departureCity": "Istanbul"},
+        {"arrivalCity": "Moscow"},
+        {"capacity" : "Airbus A320"}
+    ]})
+	
+8.
+db.Flights.find({$and:[
+        {"departureCity": "Istanbul"},
+        {"arrivalCity": "Moscow"},
+        {"capacity" : "Airbus A320"},
+        {{$toDate: "$date"} :  {$gt :  ISODate(d1), $lt : ISODate(d2)}}
+    ]})
+
+9.
+db.Flights1.find({$and:[
+        {"departureCity": "Brussels"},
+        { "arrivalCity": "Moscow"} , { "departreTime" : "2022-02-03" } ]}, { _id: 0, airline: 1 })
+	
+	
+10.
+db.Flights1.deleteMany( { $and : [{ "departreTime" : "2022-06-21" } , { "airline" : "Emirates Airlines" }]})
+
+11.
+db.Flights.updateOne(
+    {"_id" : ObjectId("61f7a211eaf86ee5fc555c00")},
+    {
+        $set : { "capacity" : "Airbus A321"},
+        $currentDate: { lastModified: true }
+    }
+    )
+
+12.
+db.Flights.updateMany({
+    "departureCity": "Istanbul",
+    "arrivalCity": "Moscow",
+    "departreTime" : "2022-02-06"},
+    {
+        $set : { "capacity" : "Airbus A325"},
+        $currentDate: { lastModified: true }
+    }
+)
+
+13.
+db.Flights.find({$and:[
+        {"departureCity": "Brussels"},
+        { "arrivalCity": "Moscow"} , { "departreTime" : "2022-02-03" } ]}, { _id: 0, departureAirport: 1, arrivalAirport: 1 })
